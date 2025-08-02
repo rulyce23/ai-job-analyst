@@ -12,24 +12,18 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    /**
-     * Show the dashboard with user's job recommendations and statistics.
-     */
     public function index()
     {
         $user = Auth::user();
         
-        // Get user's latest job recommendations
         $recommendations = JobRecommendation::where('user_id', $user->id)
             ->with('jobRole')
             ->orderBy('match_score', 'desc')
             ->take(5)
             ->get();
         
-        // Get user profile completion percentage
         $profileCompletion = $this->calculateProfileCompletion($user);
         
-        // Get statistics
         $stats = [
             'total_recommendations' => JobRecommendation::where('user_id', $user->id)->count(),
             'high_match_jobs' => JobRecommendation::where('user_id', $user->id)->where('match_score', '>=', 80)->count(),
@@ -37,7 +31,6 @@ class DashboardController extends Controller
             'user_skills_count' => $user->skills()->count(),
         ];
         
-        // Get trending job categories
         $trendingCategories = JobRole::select('category')
             ->selectRaw('COUNT(*) as job_count')
             ->where('is_active', true)
@@ -46,14 +39,12 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
         
-        // Get pending candidates for decision making
         $pendingCandidates = Candidate::with('category')
             ->where('status', 'pending')
             ->orderBy('applied_at', 'desc')
             ->take(5)
             ->get();
         
-        // Get candidate statistics
         $candidateStats = [
             'total_candidates' => Candidate::count(),
             'pending_candidates' => Candidate::where('status', 'pending')->count(),
@@ -64,9 +55,6 @@ class DashboardController extends Controller
         return view('dashboard', compact('recommendations', 'profileCompletion', 'stats', 'trendingCategories', 'pendingCandidates', 'candidateStats'));
     }
     
-    /**
-     * Calculate user profile completion percentage.
-     */
     private function calculateProfileCompletion($user)
     {
         $profile = $user->profile;
@@ -85,15 +73,11 @@ class DashboardController extends Controller
             if ($profile->preferred_location) $completionFields++;
         }
         
-        // Add skills completion
         if ($user->skills()->count() > 0) $completionFields++;
         
         return round(($completionFields / $totalFields) * 100);
     }
     
-    /**
-     * Save or unsave a job recommendation.
-     */
     public function toggleSaveJob(Request $request, $recommendationId)
     {
         $recommendation = JobRecommendation::where('user_id', Auth::id())
@@ -109,9 +93,6 @@ class DashboardController extends Controller
         ]);
     }
     
-    /**
-     * Mark recommendation as viewed.
-     */
     public function markAsViewed($recommendationId)
     {
         $recommendation = JobRecommendation::where('user_id', Auth::id())

@@ -9,9 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class UserProfileController extends Controller
 {
-    /**
-     * Show the user profile form.
-     */
+    
     public function edit()
     {
         $user = Auth::user();
@@ -22,9 +20,6 @@ class UserProfileController extends Controller
         return view('profile.complete', compact('profile', 'skills', 'userSkills'));
     }
     
-    /**
-     * Update the user profile.
-     */
     public function update(Request $request)
     {
         $request->validate([
@@ -80,9 +75,6 @@ class UserProfileController extends Controller
             ->with('success', 'Profil berhasil diperbarui!');
     }
     
-    /**
-     * Show the skills management page.
-     */
     public function skills()
     {
         $user = Auth::user();
@@ -92,9 +84,6 @@ class UserProfileController extends Controller
         return view('profile.skills', compact('skills', 'userSkills'));
     }
     
-    /**
-     * Update user skills.
-     */
     public function updateSkills(Request $request)
     {
         $request->validate([
