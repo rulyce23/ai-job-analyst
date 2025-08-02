@@ -43,8 +43,8 @@ RUN npm run build
 # Change ownership of our applications
 RUN chown -R www-data:www-data /var/www
 
-# Expose port 9000 and start php-fpm server
-EXPOSE 9000
+# Expose port (Railway will set $PORT)
+EXPOSE 8000
 
-# Start Laravel development server
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=9000"] 
+# Start Laravel development server using $PORT environment variable
+CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"]

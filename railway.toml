@@ -3,9 +3,11 @@ builder = "dockerfile"
 
 [deploy]
 startCommand = "php artisan serve --host=0.0.0.0 --port=$PORT"
+healthcheckPath = "/ping"
+healthcheckTimeout = 300
 restartPolicyType = "on_failure"
 
 [env]
 APP_ENV = "production"
 APP_DEBUG = "false"
-LOG_CHANNEL = "stack" 
+LOG_CHANNEL = "stack"
