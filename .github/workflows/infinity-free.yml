@@ -1,29 +1,19 @@
-name: Deploy to ai-jobanalytic.infinityfreeapp.com
-
-# Run manually or on push to the main branch
-on:
-  workflow_dispatch: # Allows manual trigger
-  push:
-    branches:
-      - main
-
+on: push
+name: 🚀 Deploy website on push
 jobs:
-  deploy:
-    name: Deploy via FTP
+  web-deploy:
+    name: 🎉 Deploy
     runs-on: ubuntu-latest
-
     steps:
-      # Step 1: Clone the latest code from GitHub
-      - name: Get latest code
-        uses: actions/checkout@v4
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v4
 
-      # Step 2: Upload code via FTP
-      - name: Deploy to ai-jobanalytic.infinityfreeapp.com
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ftpupload.net
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /ai-jobanalytic.infinityfreeapp.com/htdocs/  # For addon domains
-          timeout: 86400000
-          log-level: standard
+    - name: 📂 Sync files
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ftpupload.net
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        server-dir: /ai-jobanalytic.infinityfreeapp.com/htdocs/  # For addon domains
+        timeout: 86400000
+        log-level: standard
