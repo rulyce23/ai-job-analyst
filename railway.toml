@@ -3,7 +3,7 @@ builder = "dockerfile"
 
 [deploy]
 startCommand = "php artisan serve --host=0.0.0.0 --port=$PORT"
-healthcheckPath = "/"
+healthcheckPath = "/health-check"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
 

@@ -6,9 +6,60 @@ use App\Http\Controllers\JobAnalysisController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\DecisionController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+// Health check routes for Railway
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'healthy',
+        'timestamp' => now(),
+        'app' => 'AI Job Analyst',
+        'version' => '1.0.0',
+        'environment' => config('app.env'),
+        'database' => DB::connection()->getPdo() ? 'connected' : 'disconnected'
+    ]);
+});
+
+Route::get('/api/health', function () {
+    return response()->json([
+        'status' => 'healthy',
+        'timestamp' => now(),
+        'app' => 'AI Job Analyst',
+        'version' => '1.0.0'
+    ]);
+});
+
+// Spatie Health Check Route
+Route::get('/health-check', function () {
+    try {
+        // Basic health checks
+        $checks = [
+            'database' => DB::connection()->getPdo() ? true : false,
+            'cache' => Cache::store()->has('health_check') !== false,
+            'app_key' => config('app.key') && config('app.key') !== 'base64:',
+            'environment' => config('app.env') ? true : false,
+        ];
+
+        $allHealthy = !in_array(false, $checks);
+
+        return response()->json([
+            'status' => $allHealthy ? 'healthy' : 'unhealthy',
+            'timestamp' => now(),
+            'checks' => $checks,
+            'app' => 'AI Job Analyst'
+        ], $allHealthy ? 200 : 503);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'unhealthy',
+            'error' => $e->getMessage(),
+            'timestamp' => now()
+        ], 503);
+    }
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
