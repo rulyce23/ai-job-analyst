@@ -9,14 +9,14 @@ jobs:
       uses: actions/checkout@v4
 
     - name: 📂 Sync files
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      uses: airvzxf/ftp-deployment-action@latest
       with:
-        server: ftp.freecluster.eu
-        username: ${{ secrets.FTP_USERNAME }}
+        server: ${{ secrets.FTP_SERVER }}
+        user: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        protocol: ftp
-        server-dir: /ai-jobanalytic.infinityfreeapp.com/htdocs/  # For addon domains
-        timeout: 86400000
-        log-level: verbose
-        security: loose
-        passive: false  # Use active mode instead of passive
+        local_dir: "./"
+        remote_dir: "/ai-jobanalytic.infinityfreeapp.com/htdocs/"
+        max_retries: "10"
+        timeout: "86400000"
+        lftp_settings: "set ftp:passive-mode off; set net:timeout 60s; set net:max-retries 3; set net:reconnect-interval-base 5;"
+        log-level: "verbose"
