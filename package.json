@@ -5,8 +5,8 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
-        "vercel-build": "npm run build"
-        
+        "vercel-build": "npm run build",
+        "postinstall": "chmod +x node_modules/.bin/vite"        
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",
