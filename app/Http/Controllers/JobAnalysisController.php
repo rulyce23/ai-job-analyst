@@ -23,6 +23,9 @@ class JobAnalysisController extends Controller
 
     public function analyze(Request $request)
     {
+
+        // saya disini memakai IBM Granite karena terdapat error saat insert dan errornya ternyata kurang full_name required dan $request full_name untuk diinputkan
+        
         $request->validate([
             'skills' => 'required|array|min:1',
             'skills.*' => 'exists:skills,id',
