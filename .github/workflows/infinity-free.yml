@@ -11,7 +11,7 @@ jobs:
     - name: 📂 Sync files
       uses: airvzxf/ftp-deployment-action@latest
       with:
-        server: ${{ secrets.FTP_SERVER }}
+        server: ftpupload.net
         user: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         local_dir: "./"
