@@ -1,22 +1,29 @@
-on: push
-name: 🚀 Deploy website on push
-jobs:
-  web-deploy:
-    name: 🎉 Deploy
-    runs-on: ubuntu-latest
-    steps:
-    - name: 🚚 Get latest code
-      uses: actions/checkout@v4
+name: Deploy to InfinityFree
 
-    - name: 📂 Sync files
-      uses: airvzxf/ftp-deployment-action@latest
-      with:
-        server: ftpupload.net
-        user: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        local_dir: "./"
-        remote_dir: "/ai-jobanalytic.infinityfreeapp.com/htdocs/"
-        max_retries: "10"
-        timeout: "86400000"
-        lftp_settings: "set ftp:passive-mode off; set net:timeout 60s; set net:max-retries 3; set net:reconnect-interval-base 5;"
-        log-level: "verbose"
+# Run manually or on push to the main branch
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy via FTP
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Clone the latest code from GitHub
+      - name: Get latest code
+        uses: actions/checkout@v4
+
+      # Step 2: Upload code via FTP
+      - name: Deploy to InfinityFree via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ftpupload.net
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /ai-jobanalytic.infinityfreeapp.com/htdocs/  # For addon domains
+          timeout: 86400000
+          log-level: standard
