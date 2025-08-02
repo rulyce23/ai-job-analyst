@@ -34,7 +34,7 @@ COPY --chown=www-data:www-data . /var/www
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Install Node.js dependencies
+# Install Node.js dependencies (using npm install instead of npm ci)
 RUN npm install --legacy-peer-deps
 
 # Build frontend assets

@@ -1,5 +1,54 @@
 # Railway Deployment Troubleshooting Guide
 
+## 🚨 Error: npm ci fails
+
+### Problem
+```
+[ 9/12] RUN npm ci
+"npm ci" did not complete successfully: exit code: 1
+```
+
+### Root Cause
+- `npm ci` requires exact version matches in package-lock.json
+- Dependency conflicts between packages
+- Incompatible peer dependencies
+
+### Solution 1: Use npm install (Recommended)
+**Update Dockerfile:**
+```dockerfile
+# Install Node.js dependencies (using npm install instead of npm ci)
+RUN npm install --legacy-peer-deps
+```
+
+**Update nixpacks.toml:**
+```toml
+[phases.install]
+cmds = [
+    "composer install --no-dev --optimize-autoloader --no-interaction",
+    "npm install --legacy-peer-deps"
+]
+```
+
+### Solution 2: Add .npmrc configuration
+Create `.npmrc` file:
+```
+legacy-peer-deps=true
+package-lock=false
+save-exact=false
+```
+
+### Solution 3: Remove postinstall script
+**Update package.json:**
+```json
+{
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "vercel-build": "npm run build"
+  }
+}
+```
+
 ## 🚨 Error: nix-env build failure
 
 ### Problem
@@ -26,7 +75,7 @@ nixPkgs = ["php82", "php82Extensions.composer", "nodejs_18", "npm"]
 [phases.install]
 cmds = [
     "composer install --no-dev --optimize-autoloader --no-interaction",
-    "npm install --production=false --legacy-peer-deps"
+    "npm install --legacy-peer-deps"
 ]
 
 [phases.build]
@@ -65,6 +114,7 @@ cmd = "php artisan serve --host=0.0.0.0 --port=$PORT"
 **Solution**: 
 - Use `npm install --legacy-peer-deps` instead
 - Move dependencies from `devDependencies` to `dependencies` in package.json
+- Add `.npmrc` file with `legacy-peer-deps=true`
 
 ### 2. PHP version conflicts
 **Problem**: PHP version not compatible
@@ -149,6 +199,8 @@ web: php artisan serve --host=0.0.0.0 --port=$PORT
 - [ ] Database migrations ready
 - [ ] Frontend assets built (`npm run build`)
 - [ ] Laravel cache cleared
+- [ ] `.npmrc` file created with `legacy-peer-deps=true`
+- [ ] Removed `postinstall` script from package.json
 
 ### During Deployment
 - [ ] Monitor build logs
@@ -207,7 +259,7 @@ echo config('app.env');
 2. **Redeploy**:
    ```bash
    git add .
-   git commit -m "Switch to Dockerfile deployment"
+   git commit -m "Fix npm ci error - use npm install instead"
    git push origin main
    ```
 
@@ -224,4 +276,4 @@ If issues persist:
 
 ---
 
-**Note**: The Dockerfile approach is recommended for stability and reliability. 
+**Note**: The Dockerfile approach with `npm install --legacy-peer-deps` is recommended for stability and reliability. 

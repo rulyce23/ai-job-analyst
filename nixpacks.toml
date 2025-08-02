@@ -4,7 +4,7 @@ nixPkgs = ["php82", "php82Extensions.composer", "nodejs_18", "npm"]
 [phases.install]
 cmds = [
     "composer install --no-dev --optimize-autoloader --no-interaction",
-    "npm install --production=false --legacy-peer-deps"
+    "npm install --legacy-peer-deps"
 ]
 
 [phases.build]
