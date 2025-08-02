@@ -1,8 +1,8 @@
-name: Deploy to InfinityFree
+name: Deploy to ai-jobanalytic.infinityfreeapp.com
 
 # Run manually or on push to the main branch
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Allows manual trigger
   push:
     branches:
       - main
@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       # Step 2: Upload code via FTP
-      - name: Deploy to InfinityFree via FTP
+      - name: Deploy to ai-jobanalytic.infinityfreeapp.com
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ftpupload.net
