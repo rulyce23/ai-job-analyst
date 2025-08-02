@@ -9,7 +9,7 @@ use App\Models\Category;
 class DecisionController extends Controller
 {
     /**
-     * Display the decision making interface with categories and candidates.
+     * full memakai IBM Granite dan disesuaikan lagi dibantu dengan AI lain yaitu Kilo Ai
      */
     public function index(Request $request)
     {
@@ -17,17 +17,14 @@ class DecisionController extends Controller
         
         $query = Candidate::with('category');
         
-        // Filter by category if specified
         if ($request->has('category_id') && $request->category_id != '') {
             $query->where('category_id', $request->category_id);
         }
         
-        // Filter by status if specified
         if ($request->has('status') && $request->status != '') {
             $query->where('status', $request->status);
         }
         
-        // Search by name or email
         if ($request->has('search') && $request->search != '') {
             $query->where(function($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
@@ -36,8 +33,6 @@ class DecisionController extends Controller
         }
         
         $candidates = $query->orderBy('applied_at', 'desc')->paginate(10);
-        
-        // Get statistics
         $stats = [
             'total' => Candidate::count(),
             'pending' => Candidate::where('status', 'pending')->count(),
@@ -48,9 +43,6 @@ class DecisionController extends Controller
         return view('decisions.index', compact('categories', 'candidates', 'stats'));
     }
     
-    /**
-     * Make a decision on a candidate (approve/reject).
-     */
     public function decide(Request $request)
     {
         $request->validate([
@@ -81,9 +73,6 @@ class DecisionController extends Controller
         ]);
     }
     
-    /**
-     * Get candidate details for the decision modal.
-     */
     public function show(Candidate $candidate)
     {
         $candidate->load('category');
@@ -92,10 +81,8 @@ class DecisionController extends Controller
             'candidate' => $candidate
         ]);
     }
-    
-    /**
-     * Bulk decision making for multiple candidates.
-     */
+
+    // Kilo AI
     public function bulkDecide(Request $request)
     {
         $request->validate([
