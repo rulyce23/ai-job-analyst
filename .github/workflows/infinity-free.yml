@@ -11,9 +11,12 @@ jobs:
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
-        server: ftpupload.net
+        server: ftp.freecluster.eu
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
+        protocol: ftp
         server-dir: /ai-jobanalytic.infinityfreeapp.com/htdocs/  # For addon domains
         timeout: 86400000
-        log-level: standard
+        log-level: verbose
+        security: loose
+        passive: false  # Use active mode instead of passive
