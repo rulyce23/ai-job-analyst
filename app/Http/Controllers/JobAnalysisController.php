@@ -23,6 +23,9 @@ class JobAnalysisController extends Controller
 
     public function analyze(Request $request)
     {
+
+        // saya disini memakai IBM Granite karena terdapat error saat insert dan errornya ternyata kurang full_name required dan $request full_name untuk diinputkan
+        
         $request->validate([
             'skills' => 'required|array|min:1',
             'skills.*' => 'exists:skills,id',
@@ -128,11 +131,14 @@ class JobAnalysisController extends Controller
                 }
             }
         }
+
+        //   $baseScore = ($matchedSkills / weightedScore / $totalSkills) * 100; ini salah
+        //  $weightedAdjustment = ($weightedScore / $totalJobSkills) * 35; ini salah
         
-        $baseScore = ($matchedSkills / $totalJobSkills) * 100;
+        $baseScore = ($matchedSkills / $totalJobSkills) * 100; // yang ini benar saat saya tanya memakai IBM Granite
+        $weightedAdjustment = ($weightedScore / $totalJobSkills) * 20; // yang ini benar saat saya tanya memakai IBM Granite
         
-        $weightedAdjustment = ($weightedScore / $totalJobSkills) * 20;
-        
+      
         $experienceBonus = 0;
         if ($userProfile && $userProfile->years_of_experience >= $jobRole->min_experience_years) {
             $experienceBonus = 10;

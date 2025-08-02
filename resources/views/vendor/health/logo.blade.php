@@ -7,3 +7,4 @@
         </linearGradient>
     </defs>
 </svg>
+//full ai kilo

@@ -1,3 +1,4 @@
+//full ai kilo
 <html lang="en" class="{{$theme == 'dark' ? 'dark' : ''}}">
 <head>
     <meta charset="utf-8">

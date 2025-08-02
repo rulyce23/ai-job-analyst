@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+     * full memakai IBM Granite
+     */
+
 class Category extends Model
 {
     protected $fillable = [

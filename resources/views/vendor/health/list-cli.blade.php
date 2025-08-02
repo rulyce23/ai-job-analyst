@@ -1,3 +1,4 @@
+//full ai kilo
 <div class="mx-2 my-1">
     @if(count($checkResults?->storedCheckResults ?? []))
         <div class="w-full max-w-120 mb-1 py-1 text-white bg-blue-800">
