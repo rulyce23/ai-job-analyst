@@ -21,15 +21,15 @@ jobs:
       - name: Deploy to InfinityFree via FTP
         uses: airvzxf/ftp-deployment-action@latest
         with:
-          server: ftp.freecluster.eu
+          server: ftpupload.net
           user: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local_dir: "./"
           remote_dir: "/ai-jobanalytic.infinityfreeapp.com/htdocs/"
-          max_retries: "10"
+          max_retries: "20"
           delete: "false"
           ftp_ssl_allow: "false"
-          net_max_retries: "3"
-          net_persist_retries: "5"
-          net_timeout: "60s"
-          lftp_settings: "set ftp:passive-mode off; set cmd:status-interval 1s; set net:timeout 60s; set net:max-retries 3; set net:reconnect-interval-base 5; set ssl:verify-certificate no;"
+          net_max_retries: "10"
+          net_persist_retries: "10"
+          net_timeout: "120s"
+          lftp_settings: "set ftp:passive-mode off; set cmd:status-interval 1s; set net:timeout 120s; set net:max-retries 10; set net:reconnect-interval-base 10; set ssl:verify-certificate no; set dns:fatal-timeout 30; set dns:max-retries 10;"
