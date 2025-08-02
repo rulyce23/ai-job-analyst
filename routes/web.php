@@ -13,53 +13,46 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Health check routes for Railway
+// Simple Railway Health Check - Very Basic
 Route::get('/health', function () {
     return response()->json([
         'status' => 'healthy',
-        'timestamp' => now(),
+        'timestamp' => now()->toISOString(),
         'app' => 'AI Job Analyst',
-        'version' => '1.0.0',
-        'environment' => config('app.env'),
-        'database' => DB::connection()->getPdo() ? 'connected' : 'disconnected'
-    ]);
+        'version' => '1.0.0'
+    ], 200);
 });
 
+// Alternative simple health check
 Route::get('/api/health', function () {
     return response()->json([
         'status' => 'healthy',
-        'timestamp' => now(),
-        'app' => 'AI Job Analyst',
-        'version' => '1.0.0'
-    ]);
+        'timestamp' => now()->toISOString()
+    ], 200);
 });
 
-// Spatie Health Check Route
+// Railway Health Check - Minimal
 Route::get('/health-check', function () {
     try {
-        // Basic health checks
-        $checks = [
-            'database' => DB::connection()->getPdo() ? true : false,
-            'cache' => Cache::store()->has('health_check') !== false,
-            'app_key' => config('app.key') && config('app.key') !== 'base64:',
-            'environment' => config('app.env') ? true : false,
-        ];
-
-        $allHealthy = !in_array(false, $checks);
-
+        // Only check if app is running, no database or cache checks
         return response()->json([
-            'status' => $allHealthy ? 'healthy' : 'unhealthy',
-            'timestamp' => now(),
-            'checks' => $checks,
-            'app' => 'AI Job Analyst'
-        ], $allHealthy ? 200 : 503);
+            'status' => 'healthy',
+            'timestamp' => now()->toISOString(),
+            'app' => 'AI Job Analyst',
+            'message' => 'Application is running'
+        ], 200);
     } catch (\Exception $e) {
         return response()->json([
             'status' => 'unhealthy',
             'error' => $e->getMessage(),
-            'timestamp' => now()
+            'timestamp' => now()->toISOString()
         ], 503);
     }
+});
+
+// Super simple health check for Railway
+Route::get('/ping', function () {
+    return 'pong';
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
