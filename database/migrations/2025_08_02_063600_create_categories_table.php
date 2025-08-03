@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('description')->nullable();
-            $table->string('color')->default('#3B82F6'); // Default blue color
+            $table->string('company_name')->nullable();
+            $table->string('description')->nullable();
+            $table->string('color')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

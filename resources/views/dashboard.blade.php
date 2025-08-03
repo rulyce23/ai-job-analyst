@@ -148,7 +148,7 @@ use Illuminate\Support\Facades\Auth;
                                         <div class="flex justify-between items-start">
                                             <div class="flex-1">
                                                 <h4 class="text-lg font-semibold text-gray-900">{{ $recommendation->jobRole->title }}</h4>
-                                                <p class="text-sm text-gray-600 mb-2">{{ $recommendation->jobRole->category }} • {{ $recommendation->jobRole->level }}</p>
+                                                <p class="text-sm text-gray-600 mb-2">{{ $recommendation->jobRole->category }} • {{ $recommendation->jobRole->level }} • {{ $recommendation->jobRole->company_name ?? 'Perusahaan Tidak Diketahui' }}</p>
                                                 <div class="flex items-center mb-2">
                                                     <div class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
                                                         {{ number_format($recommendation->match_score, 1) }}% Match
@@ -306,7 +306,7 @@ use Illuminate\Support\Facades\Auth;
                                         class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition duration-200">
                                     Detail
                                 </button>
-                                @if(auth()->user()->role === 'admin' && auth()->user()->company_name === $candidate->company_name)
+                                @if((auth()->user()->email === 'admin123@example.com' || auth()->user()->name === 'Admin') && auth()->user()->company_name === $candidate->company_name)
                                 <button onclick="quickDecision({{ $candidate->id }}, 'approved')"
                                         class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 transition duration-200">
                                     Setuju
@@ -347,12 +347,6 @@ use Illuminate\Support\Facades\Auth;
                     <div class="mt-6 flex justify-end space-x-3">
                         <button onclick="closeCandidateModal()" class="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
                             Tutup
-                        </button>
-                        <button id="approveBtn" onclick="makeDecision('approved')" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
-                            Setujui
-                        </button>
-                        <button id="rejectBtn" onclick="makeDecision('rejected')" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
-                            Tolak
                         </button>
                     </div>
                 </div>
@@ -412,31 +406,20 @@ use Illuminate\Support\Facades\Auth;
                             <div class="space-y-4">
                                 <div>
                                     <h4 class="font-semibold text-gray-900">${candidate.name}</h4>
-                                    <p class="text-gray-600">${candidate.email} • ${candidate.phone}</p>
+                                    <p class="text-gray-600">${candidate.email}</p>
                                 </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Kategori</label>
-                                    <p class="text-gray-900">${candidate.category ? candidate.category.name : 'Tidak ada kategori'}</p>
-                                </div>
+                        
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Pengalaman</label>
-                                    <p class="text-gray-900">${candidate.experience_years} tahun</p>
+                                    <p class="text-gray-900">${candidate.years_of_experience} tahun</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Pendidikan</label>
-                                    <p class="text-gray-900">${candidate.education || 'Tidak disebutkan'}</p>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Keahlian</label>
-                                    <p class="text-gray-900">${candidate.skills ? candidate.skills.join(', ') : 'Tidak ada keahlian'}</p>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Cover Letter</label>
-                                    <p class="text-gray-900">${candidate.cover_letter || 'Tidak ada cover letter'}</p>
+                                    <p class="text-gray-900"> ${candidate.education_level || 'Tidak disebutkan'} - ${candidate.field_of_study || 'Tidak disebutkan'}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Gaji yang Diharapkan</label>
-                                    <p class="text-gray-900">Rp ${candidate.preferred_salary_min ? candidate.preferred_salary_min.toLocaleString() : '0'} - Rp ${candidate.preferred_salary_max ? candidate.preferred_salary_max.toLocaleString() : '0'}</p>
+                                    <p class="text-gray-900">Rp ${candidate.expected_salary || 'Tidak disebutkan'}</p>
                                 </div>
                                 <!-- Informasi User -->
                                 ${candidate.user ? `
@@ -454,7 +437,7 @@ use Illuminate\Support\Facades\Auth;
                                         ${candidate.user.profile ? `
                                         <div class="bg-gray-50 p-3 rounded-lg">
                                             <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Telepon</label>
-                                            <p class="text-gray-900">${candidate.user.profile.phone || 'Tidak disebutkan'}</p>
+                                            <p class="text-gray-900">•${candidate.phone || 'Tidak disebutkan'}</p>
                                         </div>
                                         <div class="bg-gray-50 p-3 rounded-lg">
                                             <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Pengalaman</label>
