@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('role')->default('user'); // Added role column
+            $table->string('company_name')->nullable(); // Added company_name column
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

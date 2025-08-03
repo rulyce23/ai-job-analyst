@@ -16,15 +16,16 @@ class DatabaseSeeder extends Seeder
         // Seed skills and categories first
         $this->call([
             SkillSeeder::class,
+            UserSeeder::class,
             CategorySeeder::class,
             JobRoleSeeder::class,
             CandidateSeeder::class,
         ]);
 
         // Create test user
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
     }
 }
