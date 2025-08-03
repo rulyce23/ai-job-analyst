@@ -71,4 +71,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(JobRecommendation::class);
     }
+    
+    /**
+     * Get the candidates associated with the user.
+     */
+    public function candidates()
+    {
+        return $this->hasMany(Candidate::class);
+    }
 }

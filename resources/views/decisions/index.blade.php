@@ -1,3 +1,7 @@
+@php
+use Illuminate\Support\Facades\Auth;
+@endphp
+
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center space-x-3">
@@ -99,6 +103,11 @@
                             </svg>
                         </div>
                         <h3 class="text-lg font-bold text-gray-900">Filter Kandidat</h3>
+                        @if(Auth::user()->email === 'admin@example.com' || Auth::user()->name === 'admin')
+                            <a href="{{ route('candidates.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200">
+                                Tambah Kandidat
+                            </a>
+                        @endif
                     </div>
                     <form method="GET" action="{{ route('decisions.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div class="md:col-span-2">
@@ -219,6 +228,11 @@
                                                 <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold border border-green-200">
                                                     💰 Rp {{ number_format($candidate->expected_salary, 0, ',', '.') }}
                                                 </span>
+                                                @if($candidate->user)
+                                                <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-semibold border border-indigo-200">
+                                                    👥 Ditambahkan oleh: {{ $candidate->user->name }}
+                                                </span>
+                                                @endif
                                             </div>
                                             <p class="text-gray-700 mb-4 leading-relaxed">{{ Str::limit($candidate->reason, 200) }}</p>
                                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
@@ -404,6 +418,12 @@
                                                 ${candidate.status === 'pending' ? '⏳ Menunggu' : candidate.status === 'approved' ? '✅ Disetujui' : '❌ Ditolak'}
                                             </span>
                                         </div>
+                                        ${candidate.user ? `
+                                        <div class="col-span-2">
+                                            <label class="block text-sm font-semibold text-gray-700 mb-1">👥 Ditambahkan Oleh</label>
+                                            <p class="text-gray-900">${candidate.user.name} (${candidate.user.email})</p>
+                                        </div>
+                                        ` : ''}
                                     </div>
                                 </div>
 

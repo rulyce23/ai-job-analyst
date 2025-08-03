@@ -15,7 +15,7 @@ class DecisionController extends Controller
     {
         $categories = Category::where('is_active', true)->withCount('candidates')->get();
         
-        $query = Candidate::with('category');
+        $query = Candidate::with(['category', 'user']);
         
         if ($request->has('category_id') && $request->category_id != '') {
             $query->where('category_id', $request->category_id);
@@ -75,7 +75,7 @@ class DecisionController extends Controller
     
     public function show(Candidate $candidate)
     {
-        $candidate->load('category');
+        $candidate->load(['category', 'user']);
         
         return response()->json([
             'candidate' => $candidate

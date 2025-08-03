@@ -13,10 +13,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seed skills first
+        // Seed skills and categories first
         $this->call([
             SkillSeeder::class,
+            CategorySeeder::class,
             JobRoleSeeder::class,
+            CandidateSeeder::class,
         ]);
 
         // Create test user

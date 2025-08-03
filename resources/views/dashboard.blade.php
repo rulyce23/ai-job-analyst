@@ -1,4 +1,8 @@
 //full ai kilo
+@php
+use Illuminate\Support\Facades\Auth;
+@endphp
+
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -233,9 +237,16 @@
                     <div class="p-6">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-semibold text-gray-900">Kandidat Menunggu Keputusan</h3>
-                            <a href="{{ route('decisions.index') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                Lihat Semua
-                            </a>
+                            <div class="flex space-x-3">
+                                @if(Auth::user()->email === 'admin@example.com' || Auth::user()->name === 'admin')
+                                <a href="{{ route('candidates.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                                    Tambah Kandidat
+                                </a>
+                                @endif
+                                <a href="{{ route('decisions.index') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                    Lihat Semua
+                                </a>
+                            </div>
                         </div>
                         
                         <!-- Candidate Statistics -->
@@ -273,9 +284,14 @@
                                                 {{ $candidate->category->name }}
                                             </span>
                                             @endif
-                                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">
+                                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs mr-2">
                                                 {{ $candidate->years_of_experience }} tahun pengalaman
                                             </span>
+                                            @if($candidate->user)
+                                            <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs">
+                                                Oleh: {{ $candidate->user->name }}
+                                            </span>
+                                            @endif
                                         </div>
                                         <p class="text-sm text-gray-700">{{ Str::limit($candidate->reason, 100) }}</p>
                                         <p class="text-xs text-gray-500 mt-1">Dibuat: {{ $candidate->created_at->diffForHumans() }}</p>
@@ -415,6 +431,32 @@
                                     <label class="block text-sm font-medium text-gray-700">Gaji yang Diharapkan</label>
                                     <p class="text-gray-900">Rp ${candidate.preferred_salary_min ? candidate.preferred_salary_min.toLocaleString() : '0'} - Rp ${candidate.preferred_salary_max ? candidate.preferred_salary_max.toLocaleString() : '0'}</p>
                                 </div>
+                                <!-- Informasi User -->
+                                ${candidate.user ? `
+                                <div class="border-t border-gray-200 pt-4 mt-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3 text-lg">Informasi User</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="bg-gray-50 p-3 rounded-lg">
+                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Nama User</label>
+                                            <p class="text-gray-900 font-medium">${candidate.user.name}</p>
+                                        </div>
+                                        <div class="bg-gray-50 p-3 rounded-lg">
+                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Email User</label>
+                                            <p class="text-gray-900 font-medium">${candidate.user.email}</p>
+                                        </div>
+                                        ${candidate.user.profile ? `
+                                        <div class="bg-gray-50 p-3 rounded-lg">
+                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Telepon</label>
+                                            <p class="text-gray-900">${candidate.user.profile.phone || 'Tidak disebutkan'}</p>
+                                        </div>
+                                        <div class="bg-gray-50 p-3 rounded-lg">
+                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Pengalaman</label>
+                                            <p class="text-gray-900">${candidate.user.profile.years_of_experience || 0} tahun</p>
+                                        </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                                ` : ''}
                             </div>
                         `;
                         document.getElementById('candidateModal').classList.remove('hidden');

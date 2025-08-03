@@ -39,11 +39,20 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
         
-        $pendingCandidates = Candidate::with('category')
+        // For admin users, show all pending candidates; for regular users, show only their own candidates
+        $pendingCandidatesQuery = Candidate::with(['category', 'user.profile'])
             ->where('status', 'pending')
             ->orderBy('applied_at', 'desc')
-            ->take(5)
-            ->get();
+            ->take(5);
+            
+        // Check if user is admin (using the same logic as AdminMiddleware)
+        $isAdmin = (Auth::user()->email === 'admin@example.com' || Auth::user()->name === 'admin');
+        
+        if (!$isAdmin) {
+            $pendingCandidatesQuery->where('user_id', $user->id);
+        }
+        
+        $pendingCandidates = $pendingCandidatesQuery->get();
         
         $candidateStats = [
             'total_candidates' => Candidate::count(),
@@ -73,6 +82,7 @@ class DashboardController extends Controller
             if ($profile->preferred_location) $completionFields++;
         }
         
+        // Memeriksa keterampilan pengguna
         if ($user->skills()->count() > 0) $completionFields++;
         
         return round(($completionFields / $totalFields) * 100);
