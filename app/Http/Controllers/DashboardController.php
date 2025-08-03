@@ -46,7 +46,7 @@ class DashboardController extends Controller
             ->take(5);
             
         // Check if user is admin (using the same logic as AdminMiddleware)
-        $isAdmin = (Auth::user()->email === 'admin@example.com' || Auth::user()->name === 'admin');
+        $isAdmin = (Auth::check() && (Auth::user()->email === 'admin@example.com' || Auth::user()->name === 'admin'));
         
         if (!$isAdmin) {
             $pendingCandidatesQuery->where('user_id', $user->id);

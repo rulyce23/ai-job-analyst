@@ -33,6 +33,7 @@ class Candidate extends Model
         'applied_at',
         'decided_at',
         'reviewed_at',
+        'company_name', // Nama perusahaan/PT yang direkomendasikan
     ];
 
     protected $casts = [

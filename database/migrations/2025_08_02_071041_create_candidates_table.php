@@ -32,6 +32,7 @@ return new class extends Migration
             $table->text('reason')->nullable(); // Reason for application
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->text('notes')->nullable(); // Admin notes
+            $table->string('company_name')->nullable(); // Nama perusahaan/PT yang direkomendasikan
             $table->timestamp('applied_at')->nullable(); // When the candidate applied
             $table->timestamp('decided_at')->nullable(); // When the decision was made
             $table->timestamp('reviewed_at')->nullable(); // When the candidate was last reviewed

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Candidate;
 use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
 
 class DecisionController extends Controller
 {
@@ -30,6 +31,11 @@ class DecisionController extends Controller
                 $q->where('name', 'like', '%' . $request->search . '%')
                   ->orWhere('email', 'like', '%' . $request->search . '%');
             });
+        }
+        
+        // For non-admin users, only show their own candidates
+        if (!(Auth::user()->email === 'admin@example.com' || Auth::user()->name === 'admin')) {
+            $query->where('user_id', Auth::id());
         }
         
         $candidates = $query->orderBy('applied_at', 'desc')->paginate(10);

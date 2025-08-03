@@ -19,9 +19,31 @@
                             <span class="block sm:inline">{{ session('error') }}</span>
                         </div>
                     @endif
+                    @if ($jobRecommendation)
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div>
+                                <h3 class="text-lg font-medium text-blue-800 mb-2">Rekomendasi Pekerjaan</h3>
+                                <p class="text-blue-700">
+                                    Anda melamar untuk posisi <strong>{{ $jobRecommendation->jobRole->title }}</strong> 
+                                    di perusahaan <strong>{{ $jobRecommendation->jobRole->company_name }}</strong>.
+                                </p>
+                                <input type="hidden" name="job_recommendation_id" value="{{ $jobRecommendation->id }}">
+                                <input type="hidden" name="company_name" value="{{ $jobRecommendation->jobRole->company_name }}">
+                            </div>
+                        </div>
+                    </div>
+                    @endif
 
                     <form method="POST" action="{{ route('candidates.store') }}" class="space-y-6">
                         @csrf
+                        
+                        @if ($jobRecommendation)
+                        <input type="hidden" name="job_recommendation_id" value="{{ $jobRecommendation->id }}">
+                        @endif
 
                         <div class="bg-blue-50 p-4 rounded-lg mb-6">
                             <h3 class="text-lg font-medium text-blue-800 mb-2">Informasi Dasar</h3>
@@ -29,6 +51,12 @@
                                 <!-- Kategori -->
                                 <div>
                                     <label for="category_id" class="block text-sm font-medium text-gray-700 mb-1">Kategori Pekerjaan</label>
+                                    @if ($jobRecommendation)
+                                    <input type="hidden" name="category_id" id="category_id" value="{{ is_object($jobRecommendation->jobRole) ? $jobRecommendation->jobRole->category_id : '' }}">
+                                    <div class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 py-2 px-3">
+                                        {{ is_object($jobRecommendation->jobRole) && is_object($jobRecommendation->jobRole->category) ? $jobRecommendation->jobRole->category->name : '' }}
+                                    </div>
+                                    @else
                                     <select id="category_id" name="category_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                         <option value="">Pilih Kategori</option>
                                         @foreach ($categories as $category)
@@ -37,6 +65,7 @@
                                             </option>
                                         @endforeach
                                     </select>
+                                    @endif
                                     @error('category_id')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -45,7 +74,7 @@
                                 <!-- Nama -->
                                 <div>
                                     <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
-                                    <input type="text" name="name" id="name" value="{{ old('name') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <input type="text" name="name" id="name" value="{{ old('name', $jobRecommendation ? Auth::user()->name : '') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                     @error('name')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -54,7 +83,7 @@
                                 <!-- Email -->
                                 <div>
                                     <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                    <input type="email" name="email" id="email" value="{{ old('email') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <input type="email" name="email" id="email" value="{{ old('email', $jobRecommendation ? Auth::user()->email : '') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                     @error('email')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -162,7 +191,7 @@
                                 <!-- Keahlian -->
                                 <div class="md:col-span-2">
                                     <label for="skills" class="block text-sm font-medium text-gray-700 mb-1">Keahlian (pisahkan dengan koma)</label>
-                                    <input type="text" name="skills" id="skills" value="{{ old('skills') ? implode(', ', old('skills')) : '' }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="HTML, CSS, JavaScript, PHP, Laravel">
+                                    <input type="text" name="skills" id="skills" value="{{ is_array(old('skills')) ? implode(', ', old('skills')) : old('skills') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="HTML, CSS, JavaScript, PHP, Laravel">
                                     <p class="text-xs text-gray-500 mt-1">Masukkan keahlian dipisahkan dengan koma</p>
                                     @error('skills')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>

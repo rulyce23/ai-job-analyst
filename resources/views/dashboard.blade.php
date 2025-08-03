@@ -1,4 +1,4 @@
-//full ai kilo
+<!-- Kilo AI -->
 @php
 use Illuminate\Support\Facades\Auth;
 @endphp
@@ -221,6 +221,11 @@ use Illuminate\Support\Facades\Auth;
                                 <a href="{{ route('profile.skills') }}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition duration-200">
                                     ⭐ Kelola Keahlian
                                 </a>
+                                @if(Auth::user()->email === 'admin@example.com' || Auth::user()->name === 'admin')
+                                <a href="{{ route('candidates.create') }}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition duration-200">
+                                    ➕ Tambah Kandidat
+                                </a>
+                                @endif
                                 <a href="{{ route('decisions.index') }}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition duration-200">
                                     📋 Kelola Kandidat
                                 </a>
@@ -296,20 +301,22 @@ use Illuminate\Support\Facades\Auth;
                                         <p class="text-sm text-gray-700">{{ Str::limit($candidate->reason, 100) }}</p>
                                         <p class="text-xs text-gray-500 mt-1">Dibuat: {{ $candidate->created_at->diffForHumans() }}</p>
                                     </div>
-                                    <div class="ml-4 flex flex-col space-y-2">
-                                        <button onclick="showCandidateModal({{ $candidate->id }})"
-                                                class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition duration-200">
-                                            Detail
-                                        </button>
-                                        <button onclick="quickDecision({{ $candidate->id }}, 'approved')"
-                                                class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 transition duration-200">
-                                            Setuju
-                                        </button>
-                                        <button onclick="quickDecision({{ $candidate->id }}, 'rejected')"
-                                                class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition duration-200">
-                                            Tolak
-                                        </button>
-                                    </div>
+                            <div class="ml-4 flex flex-col space-y-2">
+                                <button onclick="showCandidateModal({{ $candidate->id }})"
+                                        class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition duration-200">
+                                    Detail
+                                </button>
+                                @if(auth()->user()->role === 'admin' && auth()->user()->company_name === $candidate->company_name)
+                                <button onclick="quickDecision({{ $candidate->id }}, 'approved')"
+                                        class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 transition duration-200">
+                                    Setuju
+                                </button>
+                                <button onclick="quickDecision({{ $candidate->id }}, 'rejected')"
+                                        class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition duration-200">
+                                    Tolak
+                                </button>
+                                @endif
+                            </div>
                                 </div>
                             </div>
                             @endforeach

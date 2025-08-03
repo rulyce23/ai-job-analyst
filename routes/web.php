@@ -77,10 +77,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/decisions/decide', [DecisionController::class, 'decide'])->name('decisions.decide');
     Route::post('/decisions/bulk-decide', [DecisionController::class, 'bulkDecide'])->name('decisions.bulk-decide');
     
+    // Candidate Management
+    Route::get('/candidates/create', [\App\Http\Controllers\CandidateController::class, 'create'])->name('candidates.create');
+    Route::post('/candidates', [\App\Http\Controllers\CandidateController::class, 'store'])->name('candidates.store');
+    
     // Admin Only Routes - Candidate Management
     Route::middleware(['admin'])->group(function () {
-        Route::get('/candidates/create', [\App\Http\Controllers\CandidateController::class, 'create'])->name('candidates.create');
-        Route::post('/candidates', [\App\Http\Controllers\CandidateController::class, 'store'])->name('candidates.store');
+        // Admin specific routes can be added here if needed
     });
 });
 
