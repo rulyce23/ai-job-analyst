@@ -14,28 +14,26 @@ return new class extends Migration
         Schema::create('candidates', function (Blueprint $table) {
             $table->id();
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('company_name')->nullable();
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email');
             $table->string('phone')->nullable();
             $table->text('address')->nullable();
             $table->date('birth_date')->nullable();
-            $table->enum('gender', ['male', 'female', 'other'])->nullable();
+            $table->string('gender')->nullable();
             $table->string('education_level')->nullable();
             $table->string('field_of_study')->nullable();
-            $table->integer('years_of_experience')->default(0);
+            $table->integer('years_of_experience')->nullable();
             $table->text('work_experience')->nullable();
-            $table->json('skills')->nullable(); // Store skills as JSON
-            $table->decimal('expected_salary', 12, 2)->nullable();
+            $table->json('skills')->nullable();
+            $table->decimal('expected_salary', 15, 2)->nullable();
             $table->string('preferred_location')->nullable();
-            $table->enum('work_type_preference', ['remote', 'onsite', 'hybrid'])->default('hybrid');
-            $table->text('reason')->nullable(); // Reason for application
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
-            $table->text('notes')->nullable(); // Admin notes
-            $table->string('company_name')->nullable(); // Nama perusahaan/PT yang direkomendasikan
-            $table->timestamp('applied_at')->nullable(); // When the candidate applied
-            $table->timestamp('decided_at')->nullable(); // When the decision was made
-            $table->timestamp('reviewed_at')->nullable(); // When the candidate was last reviewed
+            $table->string('work_type_preference')->nullable();
+            $table->text('reason')->nullable();
+            $table->string('status')->default('pending');
+            $table->timestamp('applied_at')->nullable();
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

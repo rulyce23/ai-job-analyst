@@ -34,8 +34,17 @@ class DecisionController extends Controller
         }
         
         // For non-admin users, only show their own candidates
-        if (!(Auth::user()->email === 'admin@example.com' || Auth::user()->name === 'admin')) {
+        if (!(Auth::user()->email === 'admin123@example.com' || Auth::user()->name === 'Admin')) {
             $query->where('user_id', Auth::id());
+        } else {
+            // For admin users, show candidates where company_name matches user's company_name OR user_id matches
+            $adminCompanyName = Auth::user()->company_name;
+            if ($adminCompanyName) {
+                $query->where(function ($q) use ($adminCompanyName) {
+                    $q->where('company_name', $adminCompanyName)
+                      ->orWhere('user_id', Auth::id());
+                });
+            }
         }
         
         $candidates = $query->orderBy('applied_at', 'desc')->paginate(10);
@@ -81,10 +90,36 @@ class DecisionController extends Controller
     
     public function show(Candidate $candidate)
     {
-        $candidate->load(['category', 'user']);
+        $candidate->load(['category', 'user.profile']);
+        
+        // Prepare data with corrected fields for frontend display
+        $candidateData = [
+            'id' => $candidate->id,
+            'name' => $candidate->name,
+            'email' => $candidate->email,
+            'phone' => $candidate->phone,
+            'category' => $candidate->category ? $candidate->category->name : 'Tidak ada kategori',
+            'years_of_experience' => $candidate->years_of_experience ?? 0,
+            'education_level' => $candidate->education_level ?? 'Tidak disebutkan',
+            'field_of_study' => $candidate->field_of_study ?? '',
+            'skills' => $candidate->skills ?? [],
+            'reason' => $candidate->reason ?? 'Tidak ada alasan yang diberikan',
+            'expected_salary' => $candidate->expected_salary ?? 0,
+            'preferred_location' => $candidate->preferred_location ?? 'Fleksibel',
+            'work_type_preference' => $candidate->work_type_preference ?? 'Hybrid',
+            'status' => $candidate->status,
+            'user' => $candidate->user ? [
+                'name' => $candidate->user->name,
+                'email' => $candidate->user->email,
+                'profile' => $candidate->user->profile ? [
+                    'phone' => $candidate->user->profile->phone ?? 'Tidak disebutkan',
+                    'years_of_experience' => $candidate->user->profile->years_of_experience ?? 0,
+                ] : null,
+            ] : null,
+        ];
         
         return response()->json([
-            'candidate' => $candidate
+            'candidate' => $candidateData
         ]);
     }
 
