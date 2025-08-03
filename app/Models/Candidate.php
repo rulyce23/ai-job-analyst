@@ -12,6 +12,7 @@ class Candidate extends Model
 {
     protected $fillable = [
         'category_id',
+        'user_id',
         'name',
         'email',
         'phone',
@@ -29,6 +30,9 @@ class Candidate extends Model
         'reason',
         'status',
         'notes',
+        'applied_at',
+        'decided_at',
+        'reviewed_at',
     ];
 
     protected $casts = [
@@ -43,6 +47,14 @@ class Candidate extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+    
+    /**
+     * Get the user that owns the candidate.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**
