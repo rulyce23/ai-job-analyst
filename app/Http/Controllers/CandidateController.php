@@ -5,91 +5,75 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Candidate;
 use App\Models\Category;
+use App\Models\JobRole;
 use App\Models\JobRecommendation;
 use Illuminate\Support\Facades\Auth;
 
 class CandidateController extends Controller
 {
-    /**
-     * Display a listing of the candidates.
-     */
-    public function index()
-    {
-        // Redirect to decisions.index since that's where candidates are managed
-        return redirect()->route('decisions.index');
-    }
-
-    /**
-     * Show the form for creating a new candidate.
-     */
     public function create(Request $request)
     {
-        $categories = Category::where('is_active', true)->get();
-        
-        // Jika ada job recommendation ID, ambil data dari job role
+        $jobRecommendationId = $request->input('job_recommendation_id');
         $jobRecommendation = null;
-        if ($request->has('job_recommendation_id')) {
-            $jobRecommendation = JobRecommendation::with('jobRole')->findOrFail($request->job_recommendation_id);
+        $category = null;
+        $categories = JobRole::all();
+        if ($jobRecommendationId) {
+            $jobRecommendation = JobRecommendation::find($jobRecommendationId);
+            if ($jobRecommendation) {
+                $category = $jobRecommendation->jobRole->title ? JobRole::where('title', $jobRecommendation->jobRole->title)->first() : null;
+            }
         }
-        
-        return view('candidates.create', compact('categories', 'jobRecommendation'));
+        return view('candidates.create', compact('jobRecommendationId', 'jobRecommendation', 'category', 'categories'));
     }
 
-    /**
-     * Store a newly created candidate in storage.
-     */
     public function store(Request $request)
     {
-        $rules = [
-            'category_id' => 'nullable|exists:categories,id',
+        $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'phone' => 'required|string|max:20',
-            'address' => 'required|string|max:500',
-            'birth_date' => 'required|date',
-            'gender' => 'required|in:male,female,other',
-            'education_level' => 'required|string|max:50',
-            'field_of_study' => 'required|string|max:100',
-            'years_of_experience' => 'required|integer|min:0',
-            'work_experience' => 'required|string',
-            'skills' => 'required|string',
-            'expected_salary' => 'required|numeric|min:0',
-            'preferred_location' => 'required|string|max:100',
-            'work_type_preference' => 'required|in:onsite,remote,hybrid',
-            'reason' => 'required|string',
-        ];
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string',
+            'birth_date' => 'nullable|date',
+            'gender' => 'nullable|string|max:10',
+            'education_level' => 'nullable|string|max:50',
+            'field_of_study' => 'nullable|string|max:100',
+            'years_of_experience' => 'nullable|integer|min:0',
+            'work_experience' => 'nullable|string',
+            'skills' => 'nullable|string',
+            'expected_salary' => 'nullable|numeric|min:0',
+            'preferred_location' => 'nullable|string|max:100',
+            'work_type_preference' => 'nullable|string|max:50',
+            'reason' => 'nullable|string',
+            'status' => 'nullable|string|in:pending,approved,rejected',
+            'notes' => 'nullable|string',
+            'company_name' => 'nullable|string|max:255',
+            'category_id' => 'nullable|exists:job_roles,id',
+        ]);
 
-        // If job recommendation exists, category_id can be nullable
-        if (!$request->has('job_recommendation_id')) {
-            $rules['category_id'] = 'required|exists:categories,id';
-        }
+        $candidateData = $request->only([
+            'name', 'email', 'phone', 'address', 'birth_date', 'gender',
+            'education_level', 'field_of_study', 'years_of_experience', 'work_experience',
+            'skills', 'expected_salary', 'preferred_location', 'work_type_preference',
+            'reason', 'status', 'notes', 'company_name', 'category_id'
+        ]);
 
-        $request->validate($rules);
-        
-        // Convert skills string to array
-        $skillsArray = explode(',', $request->skills);
-        $skillsArray = array_map('trim', $skillsArray);
-        $skillsArray = array_filter($skillsArray, function($value) { return $value !== ''; });
-
-        $candidateData = $request->all();
-        $candidateData['skills'] = $skillsArray;
-        $candidateData['status'] = 'pending';
-        $candidateData['applied_at'] = now();
-        $candidateData['user_id'] = Auth::id(); // Menambahkan user_id dari user yang sedang login
-        
-        // Jika ada job recommendation ID, ambil nama perusahaan dari job role
-        if ($request->has('job_recommendation_id')) {
-            $recommendation = JobRecommendation::with('jobRole')->find($request->job_recommendation_id);
-            if ($recommendation && $recommendation->jobRole) {
-                $candidateData['company_name'] = $recommendation->jobRole->company_name;
-            } else {
-                $candidateData['company_name'] = null;
+        // Always override category_id and company_name from jobRole if job_recommendation_id is present
+        if ($request->filled('job_recommendation_id')) {
+            $jobRecommendation = \App\Models\JobRecommendation::find($request->input('job_recommendation_id'));
+            if ($jobRecommendation && is_object($jobRecommendation->jobRole)) {
+                $candidateData['category_id'] = $jobRecommendation->jobRole->id;
+                $candidateData['company_name'] = $jobRecommendation->jobRole->company_name;
             }
         }
 
+        $candidateData['user_id'] = Auth::id();
+        // $candidateData['category_id'] = JobRole::id();
+        // $candidateData['company_name'] = Auth::id();
+        
+        $candidateData['applied_at'] = now();
+
         Candidate::create($candidateData);
 
-        return redirect()->route('decisions.index')
-            ->with('success', 'Kandidat berhasil ditambahkan dan menunggu keputusan.');
+        return redirect()->route('dashboard')->with('success', 'Lamaran berhasil diajukan.');
     }
 }

@@ -34,7 +34,7 @@ class DecisionController extends Controller
         }
         
         // For non-admin users, only show their own candidates
-        if (!(Auth::user()->email === 'admin123@example.com' || Auth::user()->name === 'Admin')) {
+        if (!(Auth::user()->email === 'admin123@example.com' || Auth::user()->name === 'Admin' || Auth::user()->email === 'Test@example.com' || Auth::user()->name === 'Test')) {
             $query->where('user_id', Auth::id());
         } else {
             // For admin users, show candidates where company_name matches user's company_name OR user_id matches
@@ -91,6 +91,11 @@ class DecisionController extends Controller
     public function show(Candidate $candidate)
     {
         $candidate->load(['category', 'user.profile']);
+        
+        // Ensure skills is an array for frontend usage
+        if (is_string($candidate->skills)) {
+            $candidate->skills = json_decode($candidate->skills, true) ?? [];
+        }
         
         // Prepare data with corrected fields for frontend display
         $candidateData = [

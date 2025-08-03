@@ -59,6 +59,14 @@ class Candidate extends Model
     }
 
     /**
+     * Get the job role related to the candidate via category_id.
+     */
+    public function jobRole()
+    {
+        return $this->belongsTo(JobRole::class, 'category_id', 'category');
+    }
+
+    /**
      * Scope a query to only include candidates with a specific status.
      */
     public function scopeWithStatus($query, $status)

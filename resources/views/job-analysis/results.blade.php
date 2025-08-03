@@ -54,7 +54,7 @@
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-2m-2 0h2m-2 0h-2m2 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v12m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v12"></path>
                                             </svg>
-                                            {{ $recommendation->jobRole->category }}
+                                            {{ $recommendation->jobRole->category }} • {{ $recommendation->jobRole->company_name ?? 'Perusahaan Tidak Diketahui' }}
                                         </span>
                                         <span class="flex items-center">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

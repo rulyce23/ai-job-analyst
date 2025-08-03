@@ -40,7 +40,7 @@ class DashboardController extends Controller
             ->get();
         
         // For admin users, show all pending candidates; for regular users, show only their own candidates
-        $pendingCandidatesQuery = Candidate::with(['category', 'user.profile'])
+        $pendingCandidatesQuery = Candidate::with(['user.profile', 'jobRole'])
             ->where('status', 'pending')
             ->orderBy('applied_at', 'desc')
             ->take(5);
