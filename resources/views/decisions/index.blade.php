@@ -96,19 +96,14 @@ use Illuminate\Support\Facades\Auth;
             <!-- Filters -->
             <div class="bg-white overflow-hidden shadow-lg rounded-xl border border-gray-100 mb-8">
                 <div class="p-6 border-b border-gray-100">
-                    <div class="flex items-center space-x-3 mb-4">
-                        <div class="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
-                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-                            </svg>
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-900">Filter Kandidat</h3>
                         </div>
-                        <h3 class="text-lg font-bold text-gray-900">Filter Kandidat</h3>
-                        @if(Auth::user()->email === 'admin@example.com' || Auth::user()->name === 'admin')
-                            <a href="{{ route('candidates.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200">
-                                Tambah Kandidat
-                            </a>
-                        @endif
-                    </div>
                     <form method="GET" action="{{ route('decisions.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div class="md:col-span-2">
                             <label for="search" class="block text-sm font-semibold text-gray-700 mb-2">🔍 Cari Kandidat</label>
@@ -162,7 +157,7 @@ use Illuminate\Support\Facades\Auth;
                         </div>
                         @if($candidates->where('status', 'pending')->count() > 0)
                         <div class="flex space-x-3">
-                            <button onclick="bulkDecision('approved')" class="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center space-x-2">
+                            <!-- <button onclick="bulkDecision('approved')" class="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center space-x-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
@@ -173,7 +168,7 @@ use Illuminate\Support\Facades\Auth;
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
                                 <span>Tolak Terpilih</span>
-                            </button>
+                            </button> -->
                         </div>
                         @endif
                     </div>
@@ -267,7 +262,7 @@ use Illuminate\Support\Facades\Auth;
                                             </svg>
                                             <span>Detail</span>
                                         </button>
-                                        @if($candidate->status === 'pending')
+                                        @if($candidate->status === 'pending' && auth()->user()->role === 'admin' && auth()->user()->company_name === $candidate->company_name)
                                         <button onclick="quickDecision({{ $candidate->id }}, 'approved')"
                                                 class="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center space-x-2">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

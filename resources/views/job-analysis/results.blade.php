@@ -168,6 +168,14 @@
                                 </div>
                             </div>
                             @endif
+                            
+                            <!-- Apply as Candidate Button -->
+                            <div class="mt-6">
+                                <a href="{{ route('candidates.create', ['job_recommendation_id' => $recommendation->id]) }}" 
+                                   class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
+                                    Lamar sebagai Kandidat
+                                </a>
+                            </div>
                         </div>
                     </div>
                     @endforeach

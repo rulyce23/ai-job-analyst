@@ -22,6 +22,7 @@ class JobRole extends Model
         'requirements',
         'work_type',
         'is_active',
+        'company_name', // Nama perusahaan/PT
     ];
 
     protected $casts = [
